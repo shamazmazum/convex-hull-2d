@@ -8,7 +8,7 @@
 (in-suite convex-hull)
 
 (test convexity
-  (loop repeat 100 
+  (loop repeat 10000
         for points = (loop repeat 500 collect
                            (ch:point (random 1.0)
                                      (random 1.0)))
@@ -28,7 +28,7 @@
           points))))
 
 (test members
-  (loop repeat 100 
+  (loop repeat 10000
         for points = (loop repeat 500 collect
                            (ch:point (random 1.0)
                                      (random 1.0)))
@@ -42,7 +42,7 @@
           inside-points))))
 
 (test not-members
-  (loop repeat 100 
+  (loop repeat 10000
         for points = (loop repeat 500 collect
                            (ch:point (random 1.0)
                                      (random 1.0)))
