@@ -40,9 +40,10 @@
          (values boolean &optional))
 (defun leftp (origin p1 p2)
   (declare (optimize (speed 3)))
-  (< (cross-product (minus p1 origin)
-                    (minus p2 origin))
-     0))
+  (let ((p1 (minus p1 origin))
+        (p2 (minus p2 origin)))
+    (declare (dynamic-extent p1 p2))
+    (< (cross-product p1 p2) 0)))
 
 (sera:-> convex-hull-sorted (list)
          (values convex-hull &optional))
@@ -165,3 +166,59 @@ triangularized with TRIANGULARIZE before being used in this function."
   (declare (optimize (speed 3)))
   (some (lambda (tri) (inside-triangle-p tri point))
         (triangles-list triangles)))
+
+;; Perimeter & surface
+
+(sera:-> norm (point)
+         (values (single-float 0.0) &optional))
+(declaim (inline norm))
+(defun norm (point)
+  (let ((x (point-x point))
+        (y (point-y point)))
+    (sqrt (+ (expt x 2) (expt y 2)))))
+
+(sera:-> distance (point point)
+         (values (single-float 0.0) &optional))
+(declaim (inline distance))
+(defun distance (p1 p2)
+  (let ((p (minus p1 p2)))
+    (declare (dynamic-extent p))
+    (norm p)))
+
+;; Not the perimeter of this triangle, but its contribution to the
+;; perimeter of the convex hull.
+(sera:-> triangle-perimeter (triangle)
+         (values (single-float 0.0) &optional))
+(defun triangle-perimeter (triangle)
+  (declare (optimize (speed 3)))
+  (distance (triangle-p1 triangle)
+            (triangle-p2 triangle)))
+
+(sera:-> triangle-surface (triangle)
+         (values (single-float 0.0) &optional))
+(defun triangle-surface (triangle)
+  (declare (optimize (speed 3)))
+  (let* ((p1 (triangle-p1 triangle))
+         (p2 (triangle-p2 triangle))
+         (p3 (triangle-p3 triangle))
+         (d1 (distance p1 p2))
+         (d2 (distance p2 p3))
+         (d3 (distance p3 p1))
+         (p (/ (+ d1 d2 d3) 2)))
+    (sqrt (* p (- p d1) (- p d2) (- p d3)))))
+
+(sera:-> convex-hull-perimeter (triangles)
+         (values (single-float 0.0) &optional))
+(defun convex-hull-perimeter (triangles)
+  "Perimeter of the convex hull"
+  (declare (optimize (speed 3)))
+  (reduce #'+ (triangles-list triangles)
+          :key #'triangle-perimeter))
+
+(sera:-> convex-hull-surface (triangles)
+         (values (single-float 0.0) &optional))
+(defun convex-hull-surface (triangles)
+  "Surface of the convex hull"
+  (declare (optimize (speed 3)))
+  (reduce #'+ (triangles-list triangles)
+          :key #'triangle-surface))

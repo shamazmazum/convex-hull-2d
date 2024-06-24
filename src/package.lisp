@@ -12,5 +12,7 @@
            #:triangularize
            #:inside-triangle-p
            #:inside-convex-hull-p
+           #:convex-hull-perimeter
+           #:convex-hull-surface
            ;; For tests
            #:leftp))

@@ -91,3 +91,15 @@ NIL
 CL-USER> (convex-hull-2d:inside-convex-hull-p *tris* (convex-hull-2d:point 0.3 0.1))
 T
 ```
+
+Perimeter and surface
+--------------------
+
+To obtain perimeter and surface of the convex hull use these functions:
+
+``` lisp
+CL-USER> (convex-hull-2d:convex-hull-perimeter *tris*)
+2.9560945
+CL-USER> (convex-hull-2d:convex-hull-surface *tris*)
+0.60344005
+```

@@ -55,3 +55,12 @@
           (lambda (point)
             (ch:inside-convex-hull-p trias point))
           outside))))
+
+(test perimeter-and-surface
+  (loop repeat 1000
+        for points = (loop repeat 20000 collect
+                           (ch:point (random 1.0)
+                                     (random 1.0)))
+        for trias = (ch:triangularize (ch:convex-hull points)) do
+        (is (< (/ (abs (- 4 (ch:convex-hull-perimeter trias))) 4) 0.02))
+        (is (< (/ (abs (- 1 (ch:convex-hull-surface   trias))) 1) 0.02))))
