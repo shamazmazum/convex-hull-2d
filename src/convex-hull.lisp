@@ -88,20 +88,18 @@
   "Sort points from the smallest angle between a segment Start-Point
 and the axis X to the largest."
   (declare (optimize (speed 3)))
-  (flet ((predicate (p1 p2)
-           (let* ((p1 (minus p1 start))
-                  (p2 (minus p2 start))
-                  (x1 (point-x p1))
-                  (x2 (point-x p2)))
-             (or
-              (and (>= x2 0) (<= x1 0))
-              (let ((s1 (/ (point-y p1) x1))
-                    (s2 (/ (point-y p2) x2)))
-                (or
-                 (and (< s2 s1) (< x1 0))
-                 (and (> s1 s2) (> x2 0))))))))
-    (sb-int:with-float-traps-masked (:divide-by-zero)
-      (cons start (sort (remove start (copy-seq points)) #'predicate)))))
+  (labels ((cos-sq (point)
+             ;; Squared cosine of an angle between the point and the
+             ;; axis Ox, multiplied by sign of the cosine
+             (let ((x (point-x point))
+                   (y (point-y point)))
+               (/ (* (signum x) (expt x 2))
+                  (+ (expt x 2) (expt y 2)))))
+           (predicate (p1 p2)
+             (let ((p1 (minus p1 start))
+                   (p2 (minus p2 start)))
+             (< (cos-sq p1) (cos-sq p2)))))
+    (cons start (sort (remove start points) #'predicate))))
 
 (sera:-> convex-hull (list)
          (values convex-hull &optional))
