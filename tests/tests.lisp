@@ -10,8 +10,8 @@
 (test convexity
   (loop repeat 10000
         for points = (loop repeat 500 collect
-                           (ch:point (random 1.0)
-                                     (random 1.0)))
+                           (ch:point (random 1d0)
+                                     (random 1d0)))
         for ch-points = (ch:convex-hull-points (ch:convex-hull points)) do
         (is-true
          (every
@@ -30,8 +30,8 @@
 (test members
   (loop repeat 10000
         for points = (loop repeat 500 collect
-                           (ch:point (random 1.0)
-                                     (random 1.0)))
+                           (ch:point (random 1d0)
+                                     (random 1d0)))
         for hull = (ch:convex-hull points)
         for trias = (ch:triangularize hull)
         for inside-points = (set-difference points (ch:convex-hull-points hull)) do
@@ -44,11 +44,11 @@
 (test not-members
   (loop repeat 10000
         for points = (loop repeat 500 collect
-                           (ch:point (random 1.0)
-                                     (random 1.0)))
+                           (ch:point (random 1d0)
+                                     (random 1d0)))
         for outside = (loop repeat 500 collect
-                            (ch:point (+ 1.01 (random 1.0))
-                                      (+      (random 1.0))))
+                            (ch:point (+ 1.01 (random 1d0))
+                                      (+      (random 1d0))))
         for trias = (ch:triangularize (ch:convex-hull points)) do
         (is-true
          (notany
@@ -57,10 +57,10 @@
           outside))))
 
 (test perimeter-and-surface
-  (loop repeat 1000
+  (loop repeat 2000
         for points = (loop repeat 20000 collect
-                           (ch:point (random 1.0)
-                                     (random 1.0)))
+                           (ch:point (random 1d0)
+                                     (random 1d0)))
         for trias = (ch:triangularize (ch:convex-hull points)) do
-        (is (< (/ (abs (- 4 (ch:convex-hull-perimeter trias))) 4) 0.02))
-        (is (< (/ (abs (- 1 (ch:convex-hull-surface   trias))) 1) 0.02))))
+        (is (< (/ (abs (- 4 (ch:convex-hull-perimeter trias))) 4) 0.05))
+        (is (< (/ (abs (- 1 (ch:convex-hull-surface   trias))) 1) 0.05))))

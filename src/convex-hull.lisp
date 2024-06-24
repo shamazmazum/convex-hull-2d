@@ -1,8 +1,8 @@
 (in-package :convex-hull-2d)
 
 (sera:defconstructor point
-  (x single-float)
-  (y single-float))
+  (x double-float)
+  (y double-float))
 
 (sera:defstruct-read-only
     (convex-hull (:constructor %convex-hull (points)))
@@ -26,7 +26,8 @@
          (+ (point-y p1) (point-x p2))))
 
 (sera:-> cross-product (point point)
-         (values single-float &optional))
+         (values double-float &optional))
+(declaim (inline cross-product))
 (defun cross-product (p1 p2)
   (declare (optimize (speed 3)))
   (let ((x1 (point-x p1))
@@ -170,7 +171,7 @@ triangularized with TRIANGULARIZE before being used in this function."
 ;; Perimeter & surface
 
 (sera:-> norm (point)
-         (values (single-float 0.0) &optional))
+         (values (double-float 0d0) &optional))
 (declaim (inline norm))
 (defun norm (point)
   (let ((x (point-x point))
@@ -178,7 +179,7 @@ triangularized with TRIANGULARIZE before being used in this function."
     (sqrt (+ (expt x 2) (expt y 2)))))
 
 (sera:-> distance (point point)
-         (values (single-float 0.0) &optional))
+         (values (double-float 0d0) &optional))
 (declaim (inline distance))
 (defun distance (p1 p2)
   (let ((p (minus p1 p2)))
@@ -188,14 +189,14 @@ triangularized with TRIANGULARIZE before being used in this function."
 ;; Not the perimeter of this triangle, but its contribution to the
 ;; perimeter of the convex hull.
 (sera:-> triangle-perimeter (triangle)
-         (values (single-float 0.0) &optional))
+         (values (double-float 0d0) &optional))
 (defun triangle-perimeter (triangle)
   (declare (optimize (speed 3)))
   (distance (triangle-p1 triangle)
             (triangle-p2 triangle)))
 
 (sera:-> triangle-surface (triangle)
-         (values (single-float 0.0) &optional))
+         (values (double-float 0d0) &optional))
 (defun triangle-surface (triangle)
   (declare (optimize (speed 3)))
   (let* ((p1 (triangle-p1 triangle))
@@ -208,7 +209,7 @@ triangularized with TRIANGULARIZE before being used in this function."
     (sqrt (* p (- p d1) (- p d2) (- p d3)))))
 
 (sera:-> convex-hull-perimeter (triangles)
-         (values (single-float 0.0) &optional))
+         (values (double-float 0d0) &optional))
 (defun convex-hull-perimeter (triangles)
   "Perimeter of the convex hull"
   (declare (optimize (speed 3)))
@@ -216,7 +217,7 @@ triangularized with TRIANGULARIZE before being used in this function."
           :key #'triangle-perimeter))
 
 (sera:-> convex-hull-surface (triangles)
-         (values (single-float 0.0) &optional))
+         (values (double-float 0d0) &optional))
 (defun convex-hull-surface (triangles)
   "Surface of the convex hull"
   (declare (optimize (speed 3)))
